@@ -1,20 +1,18 @@
-const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const http = require('http');
+const httpProxy = require('http-proxy');
 
-const app = express();
+const proxy = httpProxy.createProxyServer({});
 const PORT = process.env.PORT || 3000;
 
-app.use('/', createProxyMiddleware({
-  target: 'http://ip-api.com',
-  changeOrigin: true,
-  secure: false,
-  on: {
-    proxyReq: (proxyReq, req, res) => {
-      proxyReq.setHeader('x-forwarded-host', req.headers['host']);
+const server = http.createServer((req, res) => {
+  proxy.web(req, res, { target: req.url, changeOrigin: true }, (err) => {
+    if (err) {
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Proxy error: ' + err.message);
     }
-  }
-}));
+  });
+});
 
-app.listen(PORT, () => {
-  console.log(`Proxy server running on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Forward Proxy server running on port ${PORT}`);
 });
