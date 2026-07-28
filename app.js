@@ -1,4 +1,3 @@
-
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
@@ -6,14 +5,16 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use('/', createProxyMiddleware({
-    target: 'https://example.com',
-    changeOrigin: true,
-    secure: false,
-    onProxyRes: function (proxyRes, req, res) {
-        proxyRes.headers['x-forwarded-host'] = req.headers['host'];
+  target: 'http://ip-api.com',
+  changeOrigin: true,
+  secure: false,
+  on: {
+    proxyReq: (proxyReq, req, res) => {
+      proxyReq.setHeader('x-forwarded-host', req.headers['host']);
     }
+  }
 }));
 
 app.listen(PORT, () => {
-    console.log(`Proxy server is running on port ${PORT}`);
+  console.log(`Proxy server running on port ${PORT}`);
 });
