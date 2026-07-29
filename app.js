@@ -48,7 +48,7 @@ server.on('connect', (req, socket, head) => {
     });
 });
 
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
     console.log(`Professional Proxy Server running on port ${PORT}`);
 });
